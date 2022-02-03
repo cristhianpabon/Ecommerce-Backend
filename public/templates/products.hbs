@@ -1,0 +1,25 @@
+<div class="">
+    {{#if products}}
+    <div class="table-responsive">
+        <table class="table table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Foto</th>
+            </tr>
+            {{#each products}}
+            <tr data-key="{{this.id}}">
+                <td>{{this.title}}</td>
+                <td>${{this.price}}</td>
+                <td><img width="50" src={{this.thumbnail}} alt="not found"></td>
+                <td><button id="editarFormulario">Editar</button></td>
+                <td><button id="borrarFormulario">Borrar</button></td>
+                <td><button id="agregarCarrito">Agregar Carrito</button></td>
+            </tr>
+            {{/each}}
+        </table>
+    </div>
+    {{else}}
+    <h3 class="alert alert-warning">No se encontraron productos</h3>
+    {{/if}}
+</div>

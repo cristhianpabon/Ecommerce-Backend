@@ -1,0 +1,26 @@
+<div class="">
+  {{#if productosLength}}
+    <div class="table-responsive">
+      <table class="table table-dark">
+        <tr>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Foto</th>
+        </tr>
+        {{#each productos}}
+          <tr data-key="{{this.id}}">
+            <td>{{this.nombre}}</td>
+            <td>${{this.precio}}</td>
+            <td><img width="50" src={{this.thumbnail}} alt="not found" /></td>
+            <td><button id="borrarProducto">Borrar</button></td>
+          </tr>
+        {{/each}}
+      </table>
+    </div>
+    <div>
+      <button id="borrarCarrito">Limpiar Carrito</button>
+    </div>
+  {{else}}
+    <h3 class="alert alert-warning">No se encuentra ningun producto en el carrito</h3>
+  {{/if}}
+</div>
