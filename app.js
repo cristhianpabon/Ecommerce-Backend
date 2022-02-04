@@ -3,10 +3,11 @@ const cors = require("cors");
 const handlebars = require("express-handlebars");
 const { Server } = require("socket.io");
 const minimist = require("minimist");
+const { fork } = require('child_process');
 const dotenv = require("dotenv");
 dotenv.config();
-
 let minimazedArgs = minimist(process.argv.slice(2));
+
 let config = {
   port: minimazedArgs.p || 8080,
   debug: minimazedArgs.d || false,
@@ -16,11 +17,12 @@ let config = {
 
 let info = {
   path: process.cwd(),
+  path_exe: process.execPath,
   process_id: process.pid,
   version_node: process.version,
   title_process: process.title,
   operative_sistem: process.platform,
-  memory_usage: process.memoryUsage(),
+  memory_usage: JSON.stringify(process.memoryUsage()),
   project_folder: __dirname,
 };
 
@@ -77,9 +79,14 @@ app.get("/info", (req, res) => {
   });
 });
 
-
 app.get("/api/randoms", (req, res) => {
-
+  const { cant } = req.query;
+  let data = fork('calculate');
+  let number = cant === undefined ? 100000000 : cant;
+  data.send(number);
+  data.on('message', (data)=>{
+    res.send(data);
+  })
 });
 
 // CRUD - PRODUCTOS
