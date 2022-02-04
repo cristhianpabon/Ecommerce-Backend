@@ -2,14 +2,34 @@ const express = require("express");
 const cors = require("cors");
 const handlebars = require("express-handlebars");
 const { Server } = require("socket.io");
-const bodyParser = require("body-parser");
+const minimist = require("minimist");
+const dotenv = require("dotenv");
+dotenv.config();
+
+let minimazedArgs = minimist(process.argv.slice(2));
+let config = {
+  port: minimazedArgs.p || 8080,
+  debug: minimazedArgs.d || false,
+  mode: minimazedArgs.m || "dev",
+  others: minimazedArgs._,
+};
+
+let info = {
+  path: process.cwd(),
+  process_id: process.pid,
+  version_node: process.version,
+  title_process: process.title,
+  operative_sistem: process.platform,
+  memory_usage: process.memoryUsage(),
+  project_folder: __dirname,
+};
 
 const ProductManager = require("./class/manager");
 const MessageManager = require("./class/managerMensajes");
 const CartManager = require("./class/managerCarrito");
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || config.port;
 
 const manager = new ProductManager();
 const managerMensajes = new MessageManager();
@@ -18,6 +38,10 @@ const managerCarrito = new CartManager();
 const server = app.listen(PORT, () => {
   console.log("Escuchando en el puerto " + PORT);
 });
+console.log(process.env.NODE_ENV);
+console.log(info);
+console.log(config);
+
 server.on("error", (error) => console.log(`Error en servidor ${error}`));
 const io = new Server(server);
 
@@ -26,7 +50,6 @@ app.use(express.json());
 
 app.use(cors());
 app.use(express.static("public"));
-
 app.engine(
   "hbs",
   handlebars({
@@ -34,6 +57,8 @@ app.engine(
     defaultLayout: "index.hbs",
   })
 );
+app.set("view engine", "hbs");
+app.set("views", "./views");
 
 // ADMINISTRADOR => Middleware de autenticacion para rutas
 const authMiddleware = (req, res, next) => {
@@ -45,6 +70,17 @@ const authMiddleware = (req, res, next) => {
   }
   next();
 };
+
+app.get("/info", (req, res) => {
+  res.render("info", {
+    info: { ...info, ...config },
+  });
+});
+
+
+app.get("/api/randoms", (req, res) => {
+
+});
 
 // CRUD - PRODUCTOS
 
@@ -77,7 +113,7 @@ app.post("/api/productos", authMiddleware, async (req, res) => {
     } else {
       res.status(500).send(result.message);
     }
-  });;
+  });
   io.sockets.emit("deliverProducts", await manager.getAll());
 });
 
@@ -86,9 +122,9 @@ app.put("/api/productos/:id", authMiddleware, async (req, res) => {
   const body = req.body;
   await manager.updateProduct(id, body).then((result) => {
     if (result.status === "success") {
-      res.status(200).send({message: result.message});
+      res.status(200).send({ message: result.message });
     } else {
-      res.status(500).send({message: result.message});
+      res.status(500).send({ message: result.message });
     }
   });
   io.sockets.emit("deliverProducts", await manager.getAll());
@@ -98,9 +134,9 @@ app.delete("/productos/:id", authMiddleware, async (req, res) => {
   const id = req.params.id;
   await manager.deletedById(id).then((result) => {
     if (result.status === "success") {
-      res.status(200).send({message: result.message});
+      res.status(200).send({ message: result.message });
     } else {
-      res.status(500).send({message: result.message});
+      res.status(500).send({ message: result.message });
     }
   });
   io.sockets.emit("deliverProducts", await manager.getAll());

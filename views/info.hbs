@@ -1,0 +1,78 @@
+<style>
+    .table td,
+    .table th {
+        vertical-align: middle;
+    }
+
+    h1 {
+        color: blue;
+    }
+
+    hr {
+        background-color: #ddd;
+    }
+
+    .jumbotron {
+        min-height: 100vh;
+    }
+</style>
+
+<div class="jumbotron">
+    <h1>Vista de /info</h1>
+    <br>
+
+    {{#if info}}
+    <div class="table-responsive">
+        <table class="table table-dark">
+            <tr>
+                <td>Path de ejecucion:</td>
+                <td>{{info.path}}</td>
+            </tr>
+            <tr>
+                 <td>Process Id:</td>
+                 <td>{{info.process_id}}</td>
+            </tr>
+            <tr>
+                <td>Version Node:</td>
+                <td>{{info.version_node}}</td>
+            </tr>
+            <tr>
+                <td>Tipo de ejecucion:</td>
+                <td>{{info.title_process}}</td>
+            </tr>
+            <tr>
+                <td>Sistema Operativo:</td>
+                <td>{{info.operative_sistem}}</td>
+            </tr>
+            <tr>                
+                <td>Memoria de uso:</td>
+                <td>{{info.memory_usage}}</td>
+            </tr>
+            <tr>
+                <td>Carpeta del proyecto:</td>
+                <td>{{info.project_folder}}</td>
+            </tr>
+            <tr>
+                <td>Arg. de entrada - puerto:</td>
+                <td>{{info.port}}</td>
+            </tr>
+            <tr>
+                <td>Arg. de entrada - debug:</td>
+                <td>{{info.debug}}</td>
+            </tr>
+            <tr>
+                <td>Arg. de entrada - modo:</td>
+                <td>{{info.mode}}</td>
+            </tr>
+            <tr>
+                <td>Arg. de entrada - otros:</td>
+                <td>
+                    {{#if info.others.length}}{{info.others}} 
+                    {{else}}Ninguno{{/if}}</td>
+            </tr>
+        </table>
+    </div>
+    {{else}}
+    <h3 class="alert alert-warning">No se encontro información.</h3>
+    {{/if}}
+    
